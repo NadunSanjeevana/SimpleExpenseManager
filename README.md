@@ -22,7 +22,7 @@ Current implementation
 ``` Java
 /***  Begin generating dummy data for In-Memory implementation  ***/
 expenseManager = new InMemoryDemoExpenseManager();
-/*** END ***/
+/*** END ***/14
 ```
 
 Your implementation
