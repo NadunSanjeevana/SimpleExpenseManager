@@ -16,6 +16,7 @@
 
 package lk.ac.mrt.cse.dbs.simpleexpensemanager.data;
 
+import java.text.ParseException;
 import java.util.List;
 
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
@@ -33,14 +34,14 @@ public interface AccountDAO {
      *
      * @return - list of account numbers as String
      */
-    public List<String> getAccountNumbersList();
+    public List<String> getAccountNumbersList() throws ParseException;
 
     /***
      * Get a list of accounts.
      *
      * @return - list of Account objects.
      */
-    public List<Account> getAccountsList();
+    public List<Account> getAccountsList() throws ParseException;
 
     /***
      * Get the account given the account number.

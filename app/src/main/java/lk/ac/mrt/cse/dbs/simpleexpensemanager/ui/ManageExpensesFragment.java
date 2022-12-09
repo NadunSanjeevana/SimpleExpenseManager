@@ -37,6 +37,9 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountExcep
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 
 import static lk.ac.mrt.cse.dbs.simpleexpensemanager.Constants.EXPENSE_MANAGER;
+
+import java.text.ParseException;
+
 /**
  *
  */
@@ -71,8 +74,12 @@ public class ManageExpensesFragment extends Fragment implements View.OnClickList
         ArrayAdapter<String> adapter =
                 null;
         if (currentExpenseManager != null) {
-            adapter = new ArrayAdapter<>(this.getActivity(), R.layout.support_simple_spinner_dropdown_item,
-                    currentExpenseManager.getAccountNumbersList());
+            try {
+                adapter = new ArrayAdapter<>(this.getActivity(), R.layout.support_simple_spinner_dropdown_item,
+                        currentExpenseManager.getAccountNumbersList());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         accountSelector.setAdapter(adapter);
 
