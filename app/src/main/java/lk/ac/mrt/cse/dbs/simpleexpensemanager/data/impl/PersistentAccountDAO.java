@@ -1,21 +1,26 @@
 package lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.AccountDAO;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.DataBase.DataBaseHelper;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Account;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
-import lk.ac.mrt.cse.dbs.simpleexpensemanager.ui.MainActivity;
 
 public class PersistentAccountDAO implements AccountDAO {
     private final DataBaseHelper dbh;
 
 
-    public PersistentAccountDAO(DataBaseHelper dbh){this.dbh = dbh;}
+    public PersistentAccountDAO(DataBaseHelper dbh) {
+        this.dbh = dbh;
+    }
+
     @Override
     public List<String> getAccountNumbersList() throws ParseException {
 
@@ -35,7 +40,7 @@ public class PersistentAccountDAO implements AccountDAO {
     public Account getAccount(String accountNo) throws InvalidAccountException {
         Account returnAccount;
         returnAccount = dbh.getAccount(accountNo);
-        return  returnAccount;
+        return returnAccount;
     }
 
     @Override
@@ -46,15 +51,27 @@ public class PersistentAccountDAO implements AccountDAO {
 
     @Override
     public void removeAccount(String accountNo) throws InvalidAccountException {
-
+        dbh.deleteAccount(accountNo);
     }
+
 
     @Override
     public void updateBalance(String accountNo, ExpenseType expenseType, double amount) throws InvalidAccountException {
-        if(expenseType.equals("EXPENSE")){
-            amount  = -1 * amount;
+        Account newacc = dbh.getAccount(accountNo);
+        Double balance = newacc.getBalance();
+        if (expenseType == ExpenseType.EXPENSE) {
+            if(balance >= amount) {
+                balance = balance-amount;
+            }
+            else{
+                dbh.deleteLastTransaction();
+                throw new InvalidAccountException("Insufficient Account Balance");
+            }
+
         }
-        dbh.updateAccount(amount, accountNo);
+        else{balance = amount + balance; }
+        dbh.updateAccount(balance, accountNo);
 
     }
 }
+

@@ -1,4 +1,4 @@
-package lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl;
+package lk.ac.mrt.cse.dbs.simpleexpensemanager.data.DataBase;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Account;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
@@ -51,6 +52,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + account_table);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Transaction_table);
+        onCreate(sqLiteDatabase);
 
     }
 
@@ -68,97 +72,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean addTransation(Transaction transaction){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues tv = new ContentValues();
-        tv.put(account_no,transaction.getAccountNo());
-        tv.put(type,transaction.getExpenseType());
-        tv.put(amount,transaction.getAmount());
-        tv.put(date,transaction.getDate().toString());
-
-        long insert = db.insert(Transaction_table, null, tv);
-        if(insert >= 0){
-            return true;
-        }
-        else{
-            return false;
-        }
-
-    }
-
-    public List<Transaction> getEveryTransaction() throws ParseException {
-        List<Transaction> returnList = new ArrayList<>();
-
-        String queryString = "SELECT * FROM " + Transaction_table;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(queryString,null);
-        if(cursor.moveToFirst()){
-            do {
-                Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(cursor.getString(3));
-                String accountNumber = cursor.getString(1);
-                String type = cursor.getString(2);
-                ExpenseType et;
-                if(type == "INCOME"){
-                    et = ExpenseType.INCOME;
-                }
-                else{
-                    et = ExpenseType.EXPENSE;
-                }
-
-                Double amount =  cursor.getDouble(4);
-
-
-                Transaction newCustomer = new Transaction(date1,accountNumber,et,amount);
-                returnList.add(newCustomer);
-            }while (cursor.moveToNext());
-
-        }
-        else{
-            //empty list
-
-        }
-        cursor.close();;
-        db.close();
-        return returnList;
-    }
-
-    public List<Transaction> getEveryPagingTransaction(int limit) throws ParseException {
-        List<Transaction> returnList = new ArrayList<>();
-
-        String queryString = "SELECT * FROM " + Transaction_table;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(queryString,null);
-        int i = 0;
-        if(cursor.moveToFirst()){
-            do {
-                Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(cursor.getString(3));
-                String accountNumber = cursor.getString(1);
-                String type = cursor.getString(2);
-                ExpenseType et;
-                if(type == "INCOME"){
-                    et = ExpenseType.INCOME;
-                }
-                else{
-                    et = ExpenseType.EXPENSE;
-                }
-
-                Double amount =  cursor.getDouble(4);
-
-
-                Transaction newCustomer = new Transaction(date1,accountNumber,et,amount);
-                returnList.add(newCustomer);
-                i++;
-            }while (i!=limit);
-
-        }
-        else{
-            //empty list
-
-        }
-        cursor.close();;
-        db.close();
-        return returnList;
-    }
 
 
 
@@ -210,7 +123,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             //empty list
 
         }
-        cursor.close();;
+        cursor.close();
         db.close();
         return returnList;
     }
@@ -244,9 +157,79 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String samount = amount.toString();
         String updatequeryString  = "UPDATE "+ account_table +" SET "+ initial_balance + " = " + samount + " WHERE " + account_no + " = " + acc_number;
-        Cursor cursor = db.rawQuery(updatequeryString,null);
-        cursor.close();;
+        db.execSQL(updatequeryString);
         db.close();
+    }
+
+    public void deleteAccount(String accountnumber){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String queryString = "DELETE FROM " + account_table + " WHRER " + account_no + " = " + accountnumber;
+        Cursor cursor = db.rawQuery(queryString, null);
+        cursor.close();
+        db.close();
+    }
+
+    public void addTransation(Transaction transaction){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues tv = new ContentValues();
+        tv.put(account_no,transaction.getAccountNo());
+        tv.put(type,transaction.getExpenseType());
+        tv.put(amount,transaction.getAmount());
+        tv.put(date,transaction.getDate().toString());
+
+        db.insert(Transaction_table, null, tv);
+    }
+
+
+    public ArrayList<Transaction> readTransactions(int limit) {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursorTransactions;
+        if (limit == 0){
+            cursorTransactions = db.rawQuery("SELECT * FROM " + Transaction_table, null);
+        }
+        else {
+
+            cursorTransactions = db.rawQuery("SELECT * FROM " + Transaction_table + " LIMIT " + String.valueOf(limit), null);
+        }
+
+        ArrayList<Transaction> transactionsArrayList = new ArrayList<>();
+
+
+        if (cursorTransactions.moveToFirst()) {
+            do {
+
+                ExpenseType type;
+                if(cursorTransactions.getString(2).equals("EXPENSE")){
+                    type = ExpenseType.EXPENSE;
+                }
+                else{
+                    type = ExpenseType.INCOME;
+                }
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+                Date date = new Date();
+                try{
+                    date = dateFormat.parse(cursorTransactions.getString(3));
+                }catch(Exception e){
+                    System.out.println(e);
+                }
+
+                transactionsArrayList.add(new Transaction(date,
+                        cursorTransactions.getString(1),
+                        type,
+                        cursorTransactions.getDouble(4)));
+            } while (cursorTransactions.moveToNext());
+
+        }
+
+        cursorTransactions.close();
+        return transactionsArrayList;
+    }
+
+    public void deleteLastTransaction(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String sqlquery = "DELETE FROM " + Transaction_table + " WHERE " + log_id  + " = (SELECT MAX(" + log_id + " ) FROM " + Transaction_table + ");";
+        db.execSQL(sqlquery);
     }
 
 
