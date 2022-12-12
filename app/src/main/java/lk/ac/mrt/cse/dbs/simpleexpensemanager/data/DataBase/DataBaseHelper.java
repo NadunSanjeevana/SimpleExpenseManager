@@ -185,7 +185,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         else {
 
-            cursorTransactions = db.rawQuery("SELECT * FROM " + Transaction_table + " LIMIT " + limit, null);
+            cursorTransactions = db.rawQuery("SELECT * FROM (SELECT * FROM "+ Transaction_table + " ORDER BY "+ log_id +" DESC LIMIT "+ limit+ " )ORDER BY " + log_id +" ASC", null);
         }
 
         ArrayList<Transaction> transactionsArrayList = new ArrayList<>();
@@ -225,44 +225,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String sqlquery = "DELETE FROM " + Transaction_table + " WHERE " + log_id  + " = (SELECT MAX(" + log_id + " ) FROM " + Transaction_table + ");";
         db.execSQL(sqlquery);
-    }
-
-    public List<Transaction> lastval(int limit){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursorTransactions;
-        String sqlquery = "SELECT * FROM (SELECT * FROM "+ Transaction_table + " ORDER BY "+ log_id +" DESC LIMIT "+ limit+ " )ORDER BY " + log_id +" ASC";
-        cursorTransactions = db.rawQuery(sqlquery,null);
-        ArrayList<Transaction> transactionsArrayList = new ArrayList<>();
-
-
-        if (cursorTransactions.moveToFirst()) {
-            do {
-
-                ExpenseType type;
-                if(cursorTransactions.getString(2).equals("EXPENSE")){
-                    type = ExpenseType.EXPENSE;
-                }
-                else{
-                    type = ExpenseType.INCOME;
-                }
-                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-                Date date = new Date();
-                try{
-                    date = dateFormat.parse(cursorTransactions.getString(3));
-                }catch(Exception e){
-                    System.out.println(e);
-                }
-
-                transactionsArrayList.add(new Transaction(date,
-                        cursorTransactions.getString(1),
-                        type,
-                        cursorTransactions.getDouble(4)));
-            } while (cursorTransactions.moveToNext());
-
-        }
-
-        cursorTransactions.close();
-        return transactionsArrayList;
     }
 
 
