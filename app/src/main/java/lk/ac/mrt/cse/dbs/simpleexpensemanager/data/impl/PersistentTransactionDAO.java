@@ -38,7 +38,6 @@ public class PersistentTransactionDAO implements TransactionDAO {
         List<Transaction> transactionpagingList;
         //transactionpagingList = db.readTransactions(limit);
         transactionpagingList = db.lastval(limit);
-        Collections.reverse(transactionpagingList);
         return transactionpagingList;
     }
 }
