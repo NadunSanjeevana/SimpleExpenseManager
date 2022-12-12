@@ -1,6 +1,8 @@
 package lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl;
 
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +36,9 @@ public class PersistentTransactionDAO implements TransactionDAO {
     @Override
     public List<Transaction> getPaginatedTransactionLogs(int limit) {
         List<Transaction> transactionpagingList;
-        transactionpagingList = db.readTransactions(limit);
+        //transactionpagingList = db.readTransactions(limit);
+        transactionpagingList = db.lastval(limit);
+        Collections.reverse(transactionpagingList);
         return transactionpagingList;
     }
 }

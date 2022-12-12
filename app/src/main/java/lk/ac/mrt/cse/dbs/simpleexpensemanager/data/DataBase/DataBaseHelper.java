@@ -227,6 +227,45 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL(sqlquery);
     }
 
+    public List<Transaction> lastval(int limit){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursorTransactions;
+        String sqlquery = "SELECT * FROM (SELECT * FROM "+ Transaction_table + " ORDER BY "+ log_id +" DESC LIMIT "+ limit+ " )ORDER BY " + log_id +" ASC";
+        cursorTransactions = db.rawQuery(sqlquery,null);
+        ArrayList<Transaction> transactionsArrayList = new ArrayList<>();
+
+
+        if (cursorTransactions.moveToFirst()) {
+            do {
+
+                ExpenseType type;
+                if(cursorTransactions.getString(2).equals("EXPENSE")){
+                    type = ExpenseType.EXPENSE;
+                }
+                else{
+                    type = ExpenseType.INCOME;
+                }
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+                Date date = new Date();
+                try{
+                    date = dateFormat.parse(cursorTransactions.getString(3));
+                }catch(Exception e){
+                    System.out.println(e);
+                }
+
+                transactionsArrayList.add(new Transaction(date,
+                        cursorTransactions.getString(1),
+                        type,
+                        cursorTransactions.getDouble(4)));
+            } while (cursorTransactions.moveToNext());
+
+        }
+
+        cursorTransactions.close();
+        return transactionsArrayList;
+    }
+
+
 
 
 
