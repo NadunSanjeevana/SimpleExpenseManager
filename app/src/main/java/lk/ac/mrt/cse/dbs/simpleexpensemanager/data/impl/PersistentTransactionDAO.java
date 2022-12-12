@@ -25,14 +25,14 @@ public class PersistentTransactionDAO implements TransactionDAO {
     }
 
     @Override
-    public List<Transaction> getAllTransactionLogs() throws ParseException {
+    public List<Transaction> getAllTransactionLogs() {
         List<Transaction> transactionList;
         transactionList = db.readTransactions(0);
         return transactionList;
     }
 
     @Override
-    public List<Transaction> getPaginatedTransactionLogs(int limit) throws ParseException {
+    public List<Transaction> getPaginatedTransactionLogs(int limit) {
         List<Transaction> transactionpagingList;
         transactionpagingList = db.readTransactions(limit);
         return transactionpagingList;

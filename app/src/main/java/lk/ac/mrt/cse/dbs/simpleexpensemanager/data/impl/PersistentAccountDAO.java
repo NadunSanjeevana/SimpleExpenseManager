@@ -1,10 +1,5 @@
 package lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
-import java.text.ParseException;
 import java.util.List;
 
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.AccountDAO;
@@ -22,7 +17,7 @@ public class PersistentAccountDAO implements AccountDAO {
     }
 
     @Override
-    public List<String> getAccountNumbersList() throws ParseException {
+    public List<String> getAccountNumbersList() {
 
         List<String> accountNumList;
         accountNumList = dbh.getEveryAccountnumber();
@@ -30,14 +25,14 @@ public class PersistentAccountDAO implements AccountDAO {
     }
 
     @Override
-    public List<Account> getAccountsList() throws ParseException {
+    public List<Account> getAccountsList() {
         List<Account> accountList;
         accountList = dbh.getEveryAccount();
         return accountList;
     }
 
     @Override
-    public Account getAccount(String accountNo) throws InvalidAccountException {
+    public Account getAccount(String accountNo) {
         Account returnAccount;
         returnAccount = dbh.getAccount(accountNo);
         return returnAccount;
@@ -50,7 +45,7 @@ public class PersistentAccountDAO implements AccountDAO {
     }
 
     @Override
-    public void removeAccount(String accountNo) throws InvalidAccountException {
+    public void removeAccount(String accountNo) {
         dbh.deleteAccount(accountNo);
     }
 
@@ -58,7 +53,7 @@ public class PersistentAccountDAO implements AccountDAO {
     @Override
     public void updateBalance(String accountNo, ExpenseType expenseType, double amount) throws InvalidAccountException {
         Account newacc = dbh.getAccount(accountNo);
-        Double balance = newacc.getBalance();
+        double balance = newacc.getBalance();
         if (expenseType == ExpenseType.EXPENSE) {
             if(balance >= amount) {
                 balance = balance-amount;

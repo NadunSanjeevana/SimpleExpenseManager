@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -75,7 +74,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
 
-    public List<Account> getEveryAccount() throws ParseException {
+    public List<Account> getEveryAccount() {
         List<Account> returnList = new ArrayList<>();
 
         String queryString = "SELECT * FROM " + account_table;
@@ -87,7 +86,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 String accountNumber = cursor.getString(0);
                 String bank = cursor.getString(1);
                 String accountHolder = cursor.getString(2);
-                Double balance = cursor.getDouble(3);
+                double balance = cursor.getDouble(3);
 
 
                 Account newAccount = new Account(accountNumber,bank,accountHolder,balance);
@@ -95,16 +94,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             }while (cursor.moveToNext());
 
         }
-        else{
-            //empty list
+        //empty list
 
-        }
-        cursor.close();;
+        cursor.close();
         db.close();
         return returnList;
     }
 
-    public List<String> getEveryAccountnumber() throws ParseException {
+    public List<String> getEveryAccountnumber() {
         List<String> returnList = new ArrayList<>();
 
         String queryString = "SELECT * FROM " + account_table;
@@ -119,10 +116,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             }while (cursor.moveToNext());
 
         }
-        else{
-            //empty list
+        //empty list
 
-        }
         cursor.close();
         db.close();
         return returnList;
@@ -137,7 +132,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             String accountNumber = cursor.getString(0);
             String bank = cursor.getString(1);
             String accountHolder = cursor.getString(2);
-            Double balance = cursor.getDouble(3);
+            double balance = cursor.getDouble(3);
 
 
             returnAccount = new Account(accountNumber,bank,accountHolder,balance);
@@ -148,7 +143,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         //empty list
             returnAccount = new Account(null,null,null,0);
         }
-        cursor.close();;
+        cursor.close();
         db.close();
         return returnAccount;
     }
@@ -190,7 +185,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         else {
 
-            cursorTransactions = db.rawQuery("SELECT * FROM " + Transaction_table + " LIMIT " + String.valueOf(limit), null);
+            cursorTransactions = db.rawQuery("SELECT * FROM " + Transaction_table + " LIMIT " + limit, null);
         }
 
         ArrayList<Transaction> transactionsArrayList = new ArrayList<>();

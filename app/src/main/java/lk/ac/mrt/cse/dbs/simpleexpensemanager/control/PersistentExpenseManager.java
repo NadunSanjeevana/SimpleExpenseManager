@@ -11,7 +11,7 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.PersistentTransactionDAO
 import android.support.annotation.Nullable;
 
 public class PersistentExpenseManager extends ExpenseManager {
-    private DataBaseHelper db;
+    private final DataBaseHelper db;
     public PersistentExpenseManager(@Nullable  Context context) {
         this.db = new DataBaseHelper(context, "database");
         setup();
