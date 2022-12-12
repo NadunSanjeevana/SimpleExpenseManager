@@ -158,7 +158,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public void deleteAccount(String accountnumber){
         SQLiteDatabase db = this.getWritableDatabase();
-        String queryString = "DELETE FROM " + account_table + " WHRER " + account_no + " = " + accountnumber;
+        String queryString = "DELETE FROM " + account_table + " WHERE " + account_no + " = " + accountnumber;
         Cursor cursor = db.rawQuery(queryString, null);
         cursor.close();
         db.close();
