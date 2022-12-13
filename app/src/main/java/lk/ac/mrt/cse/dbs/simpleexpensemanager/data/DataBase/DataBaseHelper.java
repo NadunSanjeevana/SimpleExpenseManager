@@ -125,7 +125,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public Account getAccount(String accName){
         Account returnAccount;
-        String queryString = "SELECT * FROM " + account_table + " WHERE "+  account_no + " = " + accName;
+        String queryString = "SELECT * FROM " + account_table + " WHERE "+  account_no + " = " + "'" + accName +"'";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(queryString,null);
         if(cursor.moveToFirst()){
@@ -149,9 +149,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public void updateAccount(Double amount, String acc_number){
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
         String samount = amount.toString();
-        String updatequeryString  = "UPDATE "+ account_table +" SET "+ initial_balance + " = " + samount + " WHERE " + account_no + " = " + acc_number;
+        String updatequeryString  = "UPDATE "+ account_table +" SET "+ initial_balance + " = " + samount + " WHERE " + account_no + " = '" + acc_number + "'";
         db.execSQL(updatequeryString);
         db.close();
     }
